@@ -14,6 +14,8 @@
 
 """Fetches the most recent GAE SDK and extracts it to the given directory."""
 
+from __future__ import print_function
+
 import os
 import re
 from StringIO import StringIO
@@ -26,6 +28,8 @@ SDK_RELEASES_URL = (
     'https://www.googleapis.com/storage/v1/b/appengine-sdks/o?prefix=featured')
 PYTHON_RELEASE_RE = re.compile(
     r'featured/google_appengine_(\d+?)\.(\d+?)\.(\d+?)\.zip')
+SDK_RELEASE_RE = re.compile(
+    r'release: \"(\d+?)\.(\d+?)\.(\d+?)\"')
 
 
 def get_gae_versions():
@@ -48,9 +52,32 @@ def get_gae_versions():
             continue
 
         versions_and_urls.append(
-            (match.groups(), release['mediaLink']))
+            ([int(x) for x in match.groups()], release['mediaLink']))
 
     return sorted(versions_and_urls, key=lambda x: x[0])
+
+
+def is_existing_up_to_date(destination, latest_version):
+    """Returns False if there is no existing install or if the existing install
+    is out of date. Otherwise, returns True."""
+    version_path = os.path.join(
+        destination, 'google_appengine', 'VERSION')
+
+    if not os.path.exists(version_path):
+        return False
+
+    with open(version_path, 'r') as f:
+        version_line = f.readline()
+
+        match = SDK_RELEASE_RE.match(version_line)
+
+        if not match:
+            print('Unable to parse version from:', version_line)
+            return False
+
+        version = [int(x) for x in match.groups()]
+
+    return version >= latest_version
 
 
 def download_sdk(url):
@@ -72,14 +99,15 @@ def extract_zip(zip, destination):
 def download_command(args):
     """Downloads and extracts the latest App Engine SDK to the given
     destination."""
-    if os.path.exists(os.path.join(args.destination, 'google_appengine')):
-        print('App Engine SDK already exists at {}.'.format(
+    latest_version = get_gae_versions().pop()
+
+    if is_existing_up_to_date(args.destination, latest_version[0]):
+        print('App Engine SDK already exists and is up to date at {}.'.format(
             args.destination))
         return
 
-    latest_version = get_gae_versions().pop()
-
-    print('Downloading App Engine SDK {}'.format('.'.join(latest_version[0])))
+    print('Downloading App Engine SDK {}'.format(
+        '.'.join([str(x) for x in latest_version[0]])))
 
     zip = download_sdk(latest_version[1])
 
