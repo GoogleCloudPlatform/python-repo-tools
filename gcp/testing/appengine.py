@@ -75,7 +75,7 @@ def setup_testbed():
     tb.init_logservice_stub()
     # tb.init_taskqueue_stub(root_path='tests/resources')
     tb.init_taskqueue_stub()
-    tb.taskqueue_stub = tb.get_stub(testbed.TASKQUEUE_SERVICE_NAME)
+    tb.taskqueue_stub = tb.get_stub(gaetestbed.TASKQUEUE_SERVICE_NAME)
 
     return tb
 
