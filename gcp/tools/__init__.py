@@ -14,7 +14,7 @@
 
 import argparse
 
-from . import appengine_sdk
+from . import appengine
 from . import requirements
 
 
@@ -23,7 +23,7 @@ def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
-    appengine_sdk.register_commands(subparsers)
+    appengine.register_commands(subparsers)
     requirements.register_commands(subparsers)
 
     args = parser.parse_args()

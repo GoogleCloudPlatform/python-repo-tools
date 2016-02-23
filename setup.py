@@ -38,7 +38,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'gcp-python-repo-tools=gcp_python_repo_tools:main',
+            'gcprepotools=gcp.tools:main',
         ],
     },
 )
