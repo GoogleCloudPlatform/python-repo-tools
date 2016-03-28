@@ -18,9 +18,6 @@ Common testing tools for Google App Engine tests.
 import sys
 import tempfile
 
-from google.appengine.datastore import datastore_stub_util
-from google.appengine.ext import testbed as gaetestbed
-from google.appengine.api import namespace_manager
 import pytest
 
 
@@ -52,6 +49,9 @@ def import_appengine_config():
 
 def setup_testbed():
     """Sets up the GAE testbed and enables common stubs."""
+    from google.appengine.datastore import datastore_stub_util
+    from google.appengine.ext import testbed as gaetestbed
+
     # Setup the datastore and memcache stub.
     # First, create an instance of the Testbed class.
     tb = gaetestbed.Testbed()
@@ -82,6 +82,8 @@ def setup_testbed():
 
 def run_taskqueue_tasks(testbed, app):
     """Runs tasks that are queued in the GAE taskqueue."""
+    from google.appengine.api import namespace_manager
+
     tasks = testbed.taskqueue_stub.get_filtered_tasks()
     for task in tasks:
         namespace = task.headers.get('X-AppEngine-Current-Namespace', '')
