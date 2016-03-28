@@ -18,7 +18,7 @@ from __future__ import absolute_import
 
 
 from flaky import flaky as _flaky
-import gcloud
+import gcloud.exceptions
 import pytest
 
 
