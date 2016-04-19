@@ -61,7 +61,7 @@ def setup_testbed():
     # Create a consistency policy that will simulate the High
     # Replication consistency model.
     policy = datastore_stub_util.PseudoRandomHRConsistencyPolicy(
-        probability=0)
+        probability=1.0)
     # Initialize the datastore stub with this policy.
     tb.init_datastore_v3_stub(
         datastore_file=tempfile.mkstemp()[1],
