@@ -42,9 +42,9 @@ def update_req(req):
     current_spec = req.specs[0] if req.specs else ('==', 'unspecified')
     new_spec = ('==', newest_version)
     if current_spec != new_spec:
-        newreq = Requirement(req.unsafe_name, [new_spec], req.extras)
+        req.specs = new_spec
         update_info = (req.project_name, current_spec[1], newest_version)
-        return newreq, update_info
+        return req, update_info
     return req, None
 
 
