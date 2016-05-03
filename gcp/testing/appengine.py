@@ -69,6 +69,7 @@ def setup_testbed():
     tb.init_memcache_stub()
 
     # Setup remaining stubs.
+    tb.init_urlfetch_stub()
     tb.init_app_identity_stub()
     tb.init_blobstore_stub()
     tb.init_user_stub()
