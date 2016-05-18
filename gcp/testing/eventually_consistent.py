@@ -20,8 +20,10 @@ from retrying import retry
 
 def _retry_on_exception(exception_class):
     def inner(e):
-        print('Retrying due to eventual consistency.')
-        return isinstance(e, exception_class)
+        if isinstance(e, exception_class):
+            print('Retrying due to eventual consistency.')
+            return True
+        return False
 
 
 def mark(f):
