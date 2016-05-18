@@ -19,19 +19,21 @@ from retrying import retry
 
 
 def _retry_on_exception(exception_class):
-    return lambda e: isinstance(e, exception_class)
+    def inner(e):
+        print('Retrying due to eventual consistency.')
+        return isinstance(e, exception_class)
 
 
 def mark(f):
     """Marks an entire test as eventually consistent and retries."""
     return retry(
         wait_exponential_multiplier=100,
-        wait_exponential_max=1000,
-        stop_max_attempt_number=3,
+        wait_exponential_max=1500,
+        stop_max_attempt_number=4,
         retry_on_exception=_retry_on_exception(AssertionError))(f)
 
 
-def call(f, exceptions=AssertionError, tries=3):
+def call(f, exceptions=AssertionError, tries=4):
     """Call a given function and treat it as eventually consistent.
 
     The function will be called immediately and retried with exponential
