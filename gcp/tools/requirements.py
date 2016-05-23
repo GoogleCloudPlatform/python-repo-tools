@@ -18,7 +18,7 @@ Checks and updates dependencies to ensure they are the latest version.
 import sys
 
 from pip.req.req_file import parse_requirements
-from pkg_resources.extern.packaging.specifiers import Specifier, SpecifierSet
+from pkg_resources.extern.packaging.specifiers import Specifier
 import requests
 
 
@@ -39,10 +39,10 @@ def update_req(req):
     """Updates a given req object with the latest version."""
     info = get_package_info(req.name)
     newest_version = info['version']
-    current_spec = next(iter(req.specifier)) if req.specifier else Specifier('==', 'unspecified')
-    new_spec = Specifier('==', newest_version)
-    if current_spec != new_spec:
-        req.specifier = SpecifierSet(''.join(new_spec))
+    current_spec = next(iter(req.specifier)) if req.specifier else None
+    new_spec = Specifier(u'=={}'.format(newest_version))
+    if current_spec._spec != new_spec._spec:
+        req.specifier = new_spec
         update_info = (req.name, current_spec.version, newest_version)
         return req, update_info
     return req, None
@@ -59,7 +59,7 @@ def check_req(req):
     """Checks if a given req is the latest version available."""
     info = get_package_info(req.name)
     newest_version = info['version']
-    current_spec = next(iter(req.specifier)) if req.specifier else Specifier('==', 'unspecified')
+    current_spec = next(iter(req.specifier)) if req.specifier else None
     if current_spec.version != newest_version:
         return req.name, current_spec.version, newest_version
 
