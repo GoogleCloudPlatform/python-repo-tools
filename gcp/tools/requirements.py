@@ -64,22 +64,31 @@ def check_req(req):
         return req.name, current_spec.version, newest_version
 
 
-def update_requirements_file(req_file):
+def update_requirements_file(req_file, skip_packages):
     reqs = read_requirements(req_file)
+    skipped = []
+    if skip_packages is not None:
+        skipped = [req for req in reqs if req.name in skip_packages]
+        reqs = [req for req in reqs if req.name not in skip_packages]
     reqs_and_info = [update_req(req) for req in reqs]
-    write_requirements([x[0] for x in reqs_and_info], req_file)
+
+    updated_reqs = [x[0] for x in reqs_and_info]
+    write_requirements(updated_reqs + skipped, req_file)
     return [x[1] for x in reqs_and_info if x[1]]
 
 
-def check_requirements_file(req_file):
+def check_requirements_file(req_file, skip_packages):
     reqs = read_requirements(req_file)
+    if skip_packages is not None:
+        reqs = [req for req in reqs if req.name not in skip_packages]
     outdated_reqs = filter(None, [check_req(req) for req in reqs])
     return outdated_reqs
 
 
 def update_command(args):
     """Updates all dependencies the specified requirements file."""
-    updated = update_requirements_file(args.requirements_file)
+    updated = update_requirements_file(
+        args.requirements_file, args.skip_packages)
 
     if updated:
         print('Updated requirements in {}:'.format(args.requirements_file))
@@ -94,7 +103,8 @@ def update_command(args):
 def check_command(args):
     """Checks that all dependencies in the specified requirements file are
     up to date."""
-    outdated = check_requirements_file(args.requirements_file)
+    outdated = check_requirements_file(args.requirements_file,
+                                       args.skip_packages)
 
     if outdated:
         print('Requirements in {} are out of date:'.format(
@@ -114,14 +124,22 @@ def register_commands(subparsers):
         'update-requirements',
         help=update_command.__doc__)
     update.set_defaults(func=update_command)
+
     update.add_argument(
         'requirements_file',
         help='Path the the requirements.txt file to update.')
+    update.add_argument(
+        '--skip-packages', nargs='+',
+        help="List of packages to ignore during the check")
 
-    update = subparsers.add_parser(
+    check = subparsers.add_parser(
         'check-requirements',
         help=check_command.__doc__)
-    update.set_defaults(func=check_command)
-    update.add_argument(
+    check.set_defaults(func=check_command)
+    check.add_argument(
         'requirements_file',
         help='Path the the requirements.txt file to check.')
+    check.add_argument(
+        '--skip-packages', nargs='+',
+        help="List of packages to ignore during the check"
+    )
