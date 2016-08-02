@@ -28,10 +28,11 @@ def _retry_on_exception(exception_class):
 
 def mark(f):
     """Marks an entire test as eventually consistent and retries."""
+    __tracebackhide__ = True
     return retry(
         wait_exponential_multiplier=100,
         wait_exponential_max=1500,
-        stop_max_attempt_number=4,
+        stop_max_attempt_number=5,
         retry_on_exception=_retry_on_exception(AssertionError))(f)
 
 
@@ -52,6 +53,7 @@ def call(f, exceptions=AssertionError, tries=4):
             assert len(results) == 10
 
     """
+    __tracebackhide__ = True
     return retry(
         wait_exponential_multiplier=100,
         wait_exponential_max=1000,
