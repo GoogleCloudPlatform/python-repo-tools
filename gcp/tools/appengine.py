@@ -18,10 +18,16 @@ from __future__ import print_function
 
 import os
 import re
-from StringIO import StringIO
+import sys
 import zipfile
 
 import requests
+
+
+if sys.version_info[0] == 2:
+    from StringIO import StringIO
+elif sys.version_info[0] == 3:
+    from io import StringIO
 
 
 SDK_RELEASES_URL = (
