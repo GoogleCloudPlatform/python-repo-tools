@@ -32,7 +32,7 @@ def mark(f):
     return retry(
         wait_exponential_multiplier=100,
         wait_exponential_max=1500,
-        stop_max_attempt_number=5,
+        stop_max_attempt_number=7,
         retry_on_exception=_retry_on_exception(AssertionError))(f)
 
 
