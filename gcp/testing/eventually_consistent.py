@@ -31,8 +31,8 @@ def mark(f):
     __tracebackhide__ = True
     return retry(
         wait_exponential_multiplier=100,
-        wait_exponential_max=1500,
-        stop_max_attempt_number=7,
+        wait_exponential_max=3000,
+        stop_max_attempt_number=10,
         retry_on_exception=_retry_on_exception(AssertionError))(f)
 
 
