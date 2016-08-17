@@ -20,15 +20,19 @@ import sys
 import tempfile
 
 import pytest
+import six
 from six.moves import reload_module
 
 
 def setup_sdk_imports():
     """Sets up appengine SDK third-party imports."""
+    if six.PY3:
+        return
 
-    # This sets up gae sdk-provided libraries.
-    if 'GAE_SDK_PATH' in os.environ:
-        sys.path.insert(0, os.environ['GAE_SDK_PATH'])
+    if 'GAE_SDK_PATH' not in os.environ:
+        return
+
+    sys.path.insert(0, os.environ['GAE_SDK_PATH'])
 
     if 'google' in sys.modules:
         # Some packages, such as protobuf, clobber the google
