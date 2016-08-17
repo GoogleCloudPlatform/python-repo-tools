@@ -33,7 +33,10 @@ def setup_sdk_imports():
     if 'google' in sys.modules:
         # Some packages, such as protobuf, clobber the google
         # namespace package. This prevents that.
-        reload_module(sys.modules['google'])
+        try:
+            reload_module(sys.modules['google'])
+        except ImportError:
+            pass
 
     # This sets up google-provided libraries.
     import dev_appserver
