@@ -15,18 +15,25 @@
 Common testing tools for Google App Engine tests.
 """
 
+import os
 import sys
 import tempfile
 
 import pytest
+from six.moves import reload_module
 
 
 def setup_sdk_imports():
     """Sets up appengine SDK third-party imports."""
+
+    # This sets up gae sdk-provided libraries.
+    if 'GAE_SDK_PATH' in os.environ:
+        sys.path.insert(0, os.environ['GAE_SDK_PATH'])
+
     if 'google' in sys.modules:
         # Some packages, such as protobuf, clobber the google
         # namespace package. This prevents that.
-        reload(sys.modules['google'])
+        reload_module(sys.modules['google'])
 
     # This sets up google-provided libraries.
     import dev_appserver
