@@ -18,6 +18,9 @@ Tools for dealing with eventually consistent tests.
 import gcloud.exceptions
 from retrying import retry
 
+WAIT_EXPONENTIAL_MAX_DEFAULT = 3000
+STOP_MAX_ATTEMP_NUMBER_DEFAULT = 10
+
 
 def _retry_on_exception(exception_class):
     def inner(e):
@@ -32,13 +35,13 @@ def mark(f):
     __tracebackhide__ = True
     return retry(
         wait_exponential_multiplier=100,
-        wait_exponential_max=3000,
-        stop_max_attempt_number=10,
+        wait_exponential_max=WAIT_EXPONENTIAL_MAX_DEFAULT,
+        stop_max_attempt_number=STOP_MAX_ATTEMP_NUMBER_DEFAULT,
         retry_on_exception=_retry_on_exception(
             (AssertionError, gcloud.exceptions.GCloudError)))(f)
 
 
-def call(f, exceptions=AssertionError, tries=4):
+def call(f, exceptions=AssertionError, tries=10):
     """Call a given function and treat it as eventually consistent.
 
     The function will be called immediately and retried with exponential
@@ -58,6 +61,6 @@ def call(f, exceptions=AssertionError, tries=4):
     __tracebackhide__ = True
     return retry(
         wait_exponential_multiplier=100,
-        wait_exponential_max=1000,
-        stop_max_attempt_number=tries,
+        wait_exponential_max=WAIT_EXPONENTIAL_MAX_DEFAULT,
+        stop_max_attempt_number=STOP_MAX_ATTEMP_NUMBER_DEFAULT,
         retry_on_exception=_retry_on_exception(exceptions))(f)()
