@@ -15,6 +15,7 @@
 Tools for dealing with eventually consistent tests.
 """
 
+import gcloud.exceptions
 from retrying import retry
 
 
@@ -33,7 +34,8 @@ def mark(f):
         wait_exponential_multiplier=100,
         wait_exponential_max=3000,
         stop_max_attempt_number=10,
-        retry_on_exception=_retry_on_exception(AssertionError))(f)
+        retry_on_exception=_retry_on_exception(
+            (AssertionError, gcloud.exceptions.GCloudError)))(f)
 
 
 def call(f, exceptions=AssertionError, tries=4):
