@@ -18,7 +18,7 @@ from __future__ import absolute_import
 
 
 from flaky import flaky as _flaky
-import gcloud.exceptions
+from google.cloud import exceptions
 import pytest
 
 
@@ -27,7 +27,7 @@ def flaky_filter(e, *args):
     exception_class, exception_instance, traceback = e
     return isinstance(
         exception_instance,
-        (gcloud.exceptions.GCloudError,))
+        (exceptions.GoogleCloudError,))
 
 
 def flaky(f):

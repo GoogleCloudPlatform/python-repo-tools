@@ -15,7 +15,7 @@
 Tools for dealing with eventually consistent tests.
 """
 
-import gcloud.exceptions
+from google.cloud import exceptions
 from retrying import retry
 
 WAIT_EXPONENTIAL_MAX_DEFAULT = 3000
@@ -38,7 +38,7 @@ def mark(f):
         wait_exponential_max=WAIT_EXPONENTIAL_MAX_DEFAULT,
         stop_max_attempt_number=STOP_MAX_ATTEMP_NUMBER_DEFAULT,
         retry_on_exception=_retry_on_exception(
-            (AssertionError, gcloud.exceptions.GCloudError)))(f)
+            (AssertionError, exceptions.GoogleCloudError)))(f)
 
 
 def call(f, exceptions=AssertionError, tries=10):
