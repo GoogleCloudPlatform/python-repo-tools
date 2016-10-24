@@ -32,7 +32,10 @@ def get_package_info(package):
 
 def read_requirements(req_file):
     """Reads a requirements file."""
-    return [x.req for x in parse_requirements(req_file, session={})]
+    items = list(parse_requirements(req_file, session={}))
+    for item in items:
+        item.req.marker = item.markers
+    return [item.req for item in items]
 
 
 def update_req(req):
