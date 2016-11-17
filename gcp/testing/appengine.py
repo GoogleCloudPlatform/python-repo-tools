@@ -21,7 +21,6 @@ import tempfile
 
 import pytest
 import six
-from six.moves import reload_module
 
 
 def setup_sdk_imports():
@@ -32,19 +31,15 @@ def setup_sdk_imports():
     if 'GAE_SDK_PATH' not in os.environ:
         return
 
-    sys.path.insert(0, os.environ['GAE_SDK_PATH'])
-
     if 'google' in sys.modules:
-        # Some packages, such as protobuf, clobber the google
-        # namespace package. This prevents that.
-        try:
-            reload_module(sys.modules['google'])
-        except ImportError:
-            pass
+        sys.modules['google'].__path__.append(
+            os.path.join(os.environ['GAE_SDK_PATH'], 'google'))
 
-    # This sets up google-provided libraries.
+    # This sets up libraries packaged with the SDK, but puts them last in
+    # sys.path to prevent clobbering newer versions
+    sys.path.append(os.environ['GAE_SDK_PATH'])
     import dev_appserver
-    dev_appserver.fix_sys_path()
+    sys.path.extend(dev_appserver.EXTRA_PATHS)
 
     # Fixes timezone and other os-level items.
     import google.appengine.tools.os_compat
