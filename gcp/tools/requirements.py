@@ -41,6 +41,11 @@ def read_requirements(req_file):
 def update_req(req):
     """Updates a given req object with the latest version."""
     info = get_package_info(req.name)
+
+    if info.get('_pypi_hidden'):
+        print('{} is hidden on PyPI and will not be updated.'.format(req))
+        return req, None
+
     newest_version = info['version']
     current_spec = next(iter(req.specifier)) if req.specifier else None
     new_spec = Specifier(u'=={}'.format(newest_version))
