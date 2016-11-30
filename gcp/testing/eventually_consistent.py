@@ -18,7 +18,7 @@ Tools for dealing with eventually consistent tests.
 from google.cloud import exceptions
 from retrying import retry
 
-WAIT_EXPONENTIAL_MAX_DEFAULT = 3000
+WAIT_EXPONENTIAL_MAX_DEFAULT = 30000
 STOP_MAX_ATTEMP_NUMBER_DEFAULT = 10
 
 
@@ -60,7 +60,7 @@ def call(f, exceptions=AssertionError, tries=10):
     """
     __tracebackhide__ = True
     return retry(
-        wait_exponential_multiplier=100,
+        wait_exponential_multiplier=1000,
         wait_exponential_max=WAIT_EXPONENTIAL_MAX_DEFAULT,
         stop_max_attempt_number=STOP_MAX_ATTEMP_NUMBER_DEFAULT,
         retry_on_exception=_retry_on_exception(exceptions))(f)()
