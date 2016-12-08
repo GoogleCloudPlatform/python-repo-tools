@@ -18,8 +18,9 @@ Tools for dealing with eventually consistent tests.
 from google.cloud import exceptions
 from retrying import retry
 
+WAIT_EXPONENTIAL_MULTIPLIER = 1000
 WAIT_EXPONENTIAL_MAX_DEFAULT = 30000
-STOP_MAX_ATTEMP_NUMBER_DEFAULT = 10
+STOP_MAX_ATTEMPT_NUMBER_DEFAULT = 10
 
 
 def _retry_on_exception(exception_class):
@@ -34,14 +35,14 @@ def mark(f):
     """Marks an entire test as eventually consistent and retries."""
     __tracebackhide__ = True
     return retry(
-        wait_exponential_multiplier=100,
+        wait_exponential_multiplier=WAIT_EXPONENTIAL_MULTIPLIER,
         wait_exponential_max=WAIT_EXPONENTIAL_MAX_DEFAULT,
-        stop_max_attempt_number=STOP_MAX_ATTEMP_NUMBER_DEFAULT,
+        stop_max_attempt_number=STOP_MAX_ATTEMPT_NUMBER_DEFAULT,
         retry_on_exception=_retry_on_exception(
             (AssertionError, exceptions.GoogleCloudError)))(f)
 
 
-def call(f, exceptions=AssertionError, tries=10):
+def call(f, exceptions=AssertionError, tries=STOP_MAX_ATTEMPT_NUMBER_DEFAULT):
     """Call a given function and treat it as eventually consistent.
 
     The function will be called immediately and retried with exponential
@@ -60,7 +61,7 @@ def call(f, exceptions=AssertionError, tries=10):
     """
     __tracebackhide__ = True
     return retry(
-        wait_exponential_multiplier=1000,
+        wait_exponential_multiplier=WAIT_EXPONENTIAL_MULTIPLIER,
         wait_exponential_max=WAIT_EXPONENTIAL_MAX_DEFAULT,
-        stop_max_attempt_number=STOP_MAX_ATTEMP_NUMBER_DEFAULT,
+        stop_max_attempt_number=tries,
         retry_on_exception=_retry_on_exception(exceptions))(f)()
