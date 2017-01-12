@@ -102,6 +102,23 @@ def extract_zip(zip, destination):
     zip_contents.extractall(destination)
 
 
+def fixup_version(destination, version):
+    """Newer releases of the SDK do not have the version number set correctly
+    in the VERSION file. Fix it up."""
+    version_path = os.path.join(
+        destination, 'google_appengine', 'VERSION')
+
+    with open(version_path, 'r') as f:
+        version_data = f.read()
+
+    version_data = version_data.replace(
+        'release: "0.0.0"',
+        'release: "{}"'.format('.'.join(str(x) for x in version)))
+
+    with open(version_path, 'w') as f:
+        f.write(version_data)
+
+
 def download_command(args):
     """Downloads and extracts the latest App Engine SDK to the given
     destination."""
@@ -120,6 +137,7 @@ def download_command(args):
     print('Extracting SDK to {}'.format(args.destination))
 
     extract_zip(zip, args.destination)
+    fixup_version(args.destination, latest_version[0])
 
     print('App Engine SDK installed.')
 
