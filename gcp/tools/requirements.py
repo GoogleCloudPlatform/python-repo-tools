@@ -18,7 +18,7 @@ Checks and updates dependencies to ensure they are the latest version.
 import sys
 
 from pip.req.req_file import parse_requirements
-from pkg_resources.extern.packaging.specifiers import Specifier
+from packaging.specifiers import Specifier
 import requests
 
 

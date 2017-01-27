@@ -34,7 +34,8 @@ setup(
 
     packages=find_packages(),
 
-    install_requires=['requests', 'retrying', 'setuptools>=25.0.0'],
+    install_requires=[
+        'requests', 'retrying', 'setuptools>=25.0.0', 'packaging'],
 
     entry_points={
         'console_scripts': [
