@@ -42,7 +42,7 @@ def read_requirements(req_file):
 def _get_newest_version(info):
     versions = info['releases'].keys()
     versions = [packaging.version.parse(version) for version in versions]
-    versions = [version for version in versions if not versions.is_prerelease]
+    versions = [version for version in versions if not version.is_prerelease]
     latest = sorted(versions).pop()
     return latest
 
