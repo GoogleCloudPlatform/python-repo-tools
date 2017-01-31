@@ -19,6 +19,7 @@ import sys
 
 from pip.req.req_file import parse_requirements
 from packaging.specifiers import Specifier
+import packaging.version
 import requests
 
 
@@ -27,7 +28,7 @@ def get_package_info(package):
     url = 'https://pypi.python.org/pypi/{}/json'.format(package)
     r = requests.get(url)
     r.raise_for_status()
-    return r.json()['info']
+    return r.json()
 
 
 def read_requirements(req_file):
@@ -38,15 +39,23 @@ def read_requirements(req_file):
     return [item.req for item in items]
 
 
+def _get_newest_version(info):
+    versions = info['releases'].keys()
+    versions = [packaging.version.parse(version) for version in versions]
+    versions = [version for version in versions if not versions.is_prerelease]
+    latest = sorted(versions).pop()
+    return latest
+
+
 def update_req(req):
     """Updates a given req object with the latest version."""
     info = get_package_info(req.name)
 
-    if info.get('_pypi_hidden'):
+    if info['info'].get('_pypi_hidden'):
         print('{} is hidden on PyPI and will not be updated.'.format(req))
         return req, None
 
-    newest_version = info['version']
+    newest_version = _get_newest_version(info)
     current_spec = next(iter(req.specifier)) if req.specifier else None
     new_spec = Specifier(u'=={}'.format(newest_version))
     if current_spec._spec != new_spec._spec:
@@ -66,7 +75,7 @@ def write_requirements(reqs, req_file):
 def check_req(req):
     """Checks if a given req is the latest version available."""
     info = get_package_info(req.name)
-    newest_version = info['version']
+    newest_version = _get_newest_version(info)
     current_spec = next(iter(req.specifier)) if req.specifier else None
     if current_spec.version != newest_version:
         return req.name, current_spec.version, newest_version
