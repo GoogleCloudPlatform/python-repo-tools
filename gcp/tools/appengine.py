@@ -122,22 +122,35 @@ def fixup_version(destination, version):
 def download_command(args):
     """Downloads and extracts the latest App Engine SDK to the given
     destination."""
-    latest_version = get_gae_versions().pop()
+    latest_two_versions = list(reversed(get_gae_versions()))[:2]
 
-    if is_existing_up_to_date(args.destination, latest_version[0]):
-        print('App Engine SDK already exists and is up to date at {}.'.format(
-            args.destination))
+    zip = None
+    version_number = None
+
+    for version in latest_two_versions:
+        if is_existing_up_to_date(args.destination, version[0]):
+            print(
+                'App Engine SDK already exists and is up to date '
+                'at {}.'.format(args.destination))
+            return
+
+        try:
+            print('Downloading App Engine SDK {}'.format(
+                '.'.join([str(x) for x in version[0]])))
+            zip = download_sdk(version[1])
+            version_number = version[0]
+            break
+        except Exception as e:
+            print('Failed to download: {}'.format(e))
+            continue
+
+    if not zip:
         return
-
-    print('Downloading App Engine SDK {}'.format(
-        '.'.join([str(x) for x in latest_version[0]])))
-
-    zip = download_sdk(latest_version[1])
 
     print('Extracting SDK to {}'.format(args.destination))
 
     extract_zip(zip, args.destination)
-    fixup_version(args.destination, latest_version[0])
+    fixup_version(args.destination, version_number)
 
     print('App Engine SDK installed.')
 
