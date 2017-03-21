@@ -58,9 +58,12 @@ def update_req(req):
     newest_version = _get_newest_version(info)
     current_spec = next(iter(req.specifier)) if req.specifier else None
     new_spec = Specifier(u'=={}'.format(newest_version))
-    if current_spec._spec != new_spec._spec:
+    if not current_spec or current_spec._spec != new_spec._spec:
         req.specifier = new_spec
-        update_info = (req.name, current_spec.version, newest_version)
+        update_info = (
+            req.name,
+            current_spec.version if current_spec else None,
+            newest_version)
         return req, update_info
     return req, None
 
