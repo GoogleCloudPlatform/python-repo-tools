@@ -12,16 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import io
+
 from setuptools import find_packages, setup
 
 
+with io.open('README.rst', 'r') as fh:
+    long_description = fh.read()
+
 setup(
-    name='gcp-python-repo-tools',
+    name='gcp-devrel-py-tools',
 
     version='0.0.1',
 
-    description='Tools for Cloud Platform Python code samples.',
-    long_description='',
+    description='Tools for Cloud Platform Python libraries and samples.',
+    long_description=long_description,
+    url='https://github.com/GoogleCloudPlatform/python-repo-tools',
 
     author='Jon Wayne Parrott',
     author_email='jonwayne@google.com',
@@ -39,7 +45,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'gcprepotools=gcp.tools:main',
+            'gcp-devrel-py-tools=gcp_devrel.tools:main',
         ],
     },
 )

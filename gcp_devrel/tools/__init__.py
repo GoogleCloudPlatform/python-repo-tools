@@ -15,16 +15,18 @@
 import argparse
 
 from . import appengine
+from . import pylint
 from . import requirements
 
 
 def main():
-    """Entrypoint for the console script gcp-python-repo-tools."""
+    """Entrypoint for the console script gcp-devrel-py-tools."""
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
     appengine.register_commands(subparsers)
     requirements.register_commands(subparsers)
+    pylint.register_commands(subparsers)
 
     args = parser.parse_args()
     args.func(args)

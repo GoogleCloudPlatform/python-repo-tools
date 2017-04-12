@@ -17,9 +17,9 @@ Checks and updates dependencies to ensure they are the latest version.
 """
 import sys
 
-from pip.req.req_file import parse_requirements
 from packaging.specifiers import Specifier
 import packaging.version
+from pip.req.req_file import parse_requirements
 import requests
 
 
