@@ -274,10 +274,6 @@ def make_rc(base_cfg, target_filename,
 
 def run_command(args):
     """Script entry point. Lints both sets of files."""
-    default_config = read_config(get_default_config())
-    user_config = load_local_config(args.config)
-    configuration = determine_final_config(user_config)
-
     library_rc = 'pylintrc'
     test_rc = 'pylintrc.test'
 
@@ -286,6 +282,10 @@ def run_command(args):
 
     if os.path.exists(test_rc):
         os.remove(test_rc)
+
+    default_config = read_config(get_default_config())
+    user_config = load_local_config(args.config)
+    configuration = determine_final_config(user_config)
 
     make_rc(default_config, library_rc,
             additions=configuration.library_additions,
