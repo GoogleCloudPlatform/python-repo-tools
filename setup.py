@@ -35,7 +35,7 @@ setup(
     license='Apache Software License',
 
     classifiers=[
-        'Operating System :: Linux',
+        'Operating System :: POSIX',
     ],
 
     packages=find_packages(),
