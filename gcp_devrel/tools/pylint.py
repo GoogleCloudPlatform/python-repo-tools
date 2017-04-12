@@ -24,6 +24,7 @@ import collections
 import copy
 import imp
 import io
+import os
 import subprocess
 import sys
 
@@ -279,6 +280,12 @@ def run_command(args):
 
     library_rc = 'pylintrc'
     test_rc = 'pylintrc.test'
+
+    if os.path.exists(library_rc):
+        os.remove(library_rc)
+
+    if os.path.exists(test_rc):
+        os.remove(test_rc)
 
     make_rc(default_config, library_rc,
             additions=configuration.library_additions,

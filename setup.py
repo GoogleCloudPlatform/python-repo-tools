@@ -23,7 +23,7 @@ with io.open('README.rst', 'r') as fh:
 setup(
     name='gcp-devrel-py-tools',
 
-    version='0.0.1',
+    version='0.0.2',
 
     description='Tools for Cloud Platform Python libraries and samples.',
     long_description=long_description,
