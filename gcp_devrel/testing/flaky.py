@@ -16,21 +16,31 @@ Tools for dealing with flaky tests.
 """
 from __future__ import absolute_import
 
+import functools
+
+try:
+    from google.cloud.exceptions import GoogleCloudError
+except ImportError:
+    class GoogleCloudError(Exception):
+        pass
 
 from flaky import flaky as _flaky
-from google.cloud import exceptions
 import pytest
 
 
-def flaky_filter(e, *args):
+def client_library_errors(e, *args):
     """Used by mark_flaky to retry on remote service errors."""
     exception_class, exception_instance, traceback = e
+
     return isinstance(
         exception_instance,
-        (exceptions.GoogleCloudError,))
+        (GoogleCloudError,))
 
 
-def flaky(f):
+def flaky(f=None, max_runs=5, filter=None):
     """Makes a test retry on remote service errors."""
-    return _flaky(max_runs=3, rerun_filter=flaky_filter)(
-        pytest.mark.flaky(f))
+    if not f:
+        return functools.partial(flaky, max_runs=max_runs, filter=filter)
+
+    return _flaky(max_runs=3, rerun_filter=filter)(
+        pytest.mark.flaky(pytest.mark.slow(f)))
