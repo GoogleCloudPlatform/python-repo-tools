@@ -35,7 +35,6 @@ def read_requirements(req_file):
     """Reads a requirements file."""
     items = list(parse_requirements(req_file, session={}))
     for item in items:
-        import pdb; pdb.set_trace()
         if item.req:
             item.req.marker = item.markers
     return [item.req if item.req else item for item in items]
