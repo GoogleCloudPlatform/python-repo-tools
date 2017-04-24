@@ -35,8 +35,10 @@ def read_requirements(req_file):
     """Reads a requirements file."""
     items = list(parse_requirements(req_file, session={}))
     for item in items:
-        item.req.marker = item.markers
-    return [item.req for item in items]
+        import pdb; pdb.set_trace()
+        if item.req:
+            item.req.marker = item.markers
+    return [item.req if item.req else item for item in items]
 
 
 def _get_newest_version(info):
@@ -49,6 +51,9 @@ def _get_newest_version(info):
 
 def update_req(req):
     """Updates a given req object with the latest version."""
+    if not req.name:
+        return req, None
+
     info = get_package_info(req.name)
 
     if info['info'].get('_pypi_hidden'):
@@ -72,7 +77,10 @@ def write_requirements(reqs, req_file):
     """Writes a list of req objects out to a given file."""
     with open(req_file, 'w') as f:
         for req in reqs:
-            f.write('{}\n'.format(req))
+            if hasattr(req, 'link'):
+                f.write('{}\n'.format(req.link))
+            else:
+                f.write('{}\n'.format(req))
 
 
 def check_req(req):
