@@ -103,9 +103,9 @@ def run_taskqueue_tasks(testbed, app):
             app.post(
                 task.url,
                 task.extract_params(),
-                headers={
-                    k: v for k, v in task.headers.iteritems()
-                    if k.startswith('X-AppEngine')})
+                headers=dict([
+                    (k, v) for k, v in task.headers.iteritems()
+                    if k.startswith('X-AppEngine')]))
         finally:
             namespace_manager.set_namespace(previous_namespace)
 
