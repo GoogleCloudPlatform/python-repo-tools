@@ -50,6 +50,7 @@ def _get_newest_version(info):
 
 def update_req(req):
     """Updates a given req object with the latest version."""
+
     if not req.name:
         return req, None
 
@@ -57,6 +58,10 @@ def update_req(req):
 
     if info['info'].get('_pypi_hidden'):
         print('{} is hidden on PyPI and will not be updated.'.format(req))
+        return req, None
+
+    if req.specifier is not None and len(req.specifier) > 1:
+        print('{} is pinned to a range and will not be updated.'.format(req))
         return req, None
 
     newest_version = _get_newest_version(info)
