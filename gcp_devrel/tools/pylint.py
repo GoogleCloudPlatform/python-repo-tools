@@ -132,6 +132,8 @@ def load_local_config(filename):
     Returns:
         module: The loaded Python module.
     """
+    if not filename:
+        return imp.new_module('local_pylint_config')
     module = imp.load_source('local_pylint_config', filename)
     return module
 
