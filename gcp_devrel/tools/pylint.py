@@ -163,7 +163,7 @@ def determine_final_config(config_module):
         if hasattr(config_module, field):
             config = config._replace(**{field: getattr(config_module, field)})
 
-    return config_module
+    return config
 
 
 def _transform_opt(opt_val):
