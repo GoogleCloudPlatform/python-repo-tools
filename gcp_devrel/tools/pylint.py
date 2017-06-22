@@ -80,7 +80,6 @@ DEFAULT_TEST_RC_REPLACEMENTS['BASIC'].update({
     'method-rgx': '[a-z_][a-z0-9_]{2,80}$',
     'function-rgx': '[a-z_][a-z0-9_]{2,80}$',
 })
-DEFAULT_IGNORED_FILES = ()
 
 _ERROR_TEMPLATE = 'Pylint failed on {} with status {:d}.'
 _LINT_FILESET_MSG = (
@@ -140,7 +139,7 @@ def load_local_config(filename):
 
 Config = collections.namedtuple('Config', [
     'library_additions', 'library_replacements',
-    'test_additions', 'test_replacements', 'ignored_files'])
+    'test_additions', 'test_replacements'])
 
 
 def determine_final_config(config_module):
@@ -156,8 +155,7 @@ def determine_final_config(config_module):
     """
     config = Config(
         DEFAULT_LIBRARY_RC_ADDITIONS, DEFAULT_LIBRARY_RC_REPLACEMENTS,
-        DEFAULT_TEST_RC_ADDITIONS, DEFAULT_TEST_RC_REPLACEMENTS,
-        DEFAULT_IGNORED_FILES)
+        DEFAULT_TEST_RC_ADDITIONS, DEFAULT_TEST_RC_REPLACEMENTS)
 
     for field in config._fields:
         if hasattr(config_module, field):
