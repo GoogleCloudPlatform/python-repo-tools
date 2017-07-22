@@ -40,6 +40,7 @@ DEFAULT_LIBRARY_RC_ADDITIONS = {
             'redefined-variable-type',
             'similarities',
             'no-else-return',
+            'ungrouped-imports'
         ],
     },
 }
