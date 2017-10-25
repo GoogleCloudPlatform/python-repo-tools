@@ -34,10 +34,19 @@ def get_package_info(package):
 def read_requirements(req_file):
     """Reads a requirements file."""
     items = list(parse_requirements(req_file, session={}))
+
+    result = []
+
     for item in items:
+        # Get line number from item
+        line_number = item.comes_from.split(req_file + ' (line ')[1][:-1]
         if item.req:
             item.req.marker = item.markers
-    return [item.req if item.req else item for item in items]
+            result.append((item.req, line_number))
+        else:
+            result.append((item, line_number))
+
+    return result
 
 
 def _get_newest_version(info):
@@ -77,14 +86,21 @@ def update_req(req):
     return req, None
 
 
-def write_requirements(reqs, req_file):
+def write_requirements(reqs_linenum, req_file):
     """Writes a list of req objects out to a given file."""
-    with open(req_file, 'w') as f:
-        for req in reqs:
-            if hasattr(req, 'link'):
-                f.write('{}\n'.format(req.link))
-            else:
-                f.write('{}\n'.format(req))
+    with open(req_file, 'r') as input:
+        lines = input.readlines()
+
+    for req in reqs_linenum:
+        line_num = int(req[1])
+
+        if hasattr(req[0], 'link'):
+            lines[line_num - 1] = '{}\n'.format(req[0].link)
+        else:
+            lines[line_num - 1] = '{}\n'.format(req[0])
+
+    with open(req_file, 'w') as output:
+        output.writelines(lines)
 
 
 def check_req(req):
@@ -100,13 +116,13 @@ def update_requirements_file(req_file, skip_packages):
     reqs = read_requirements(req_file)
     skipped = []
     if skip_packages is not None:
-        skipped = [req for req in reqs if req.name in skip_packages]
-        reqs = [req for req in reqs if req.name not in skip_packages]
-    reqs_and_info = [update_req(req) for req in reqs]
+        skipped = [req for req in reqs if req[0].name in skip_packages]
+        reqs = [req for req in reqs if req[0].name not in skip_packages]
+    reqs_info_linenum = [update_req(req[0]) + (req[1],) for req in reqs]
 
-    updated_reqs = [x[0] for x in reqs_and_info]
+    updated_reqs = [(x[0], x[2]) for x in reqs_info_linenum]
     write_requirements(updated_reqs + skipped, req_file)
-    return [x[1] for x in reqs_and_info if x[1]]
+    return [x[1] for x in reqs_info_linenum if x[1]]
 
 
 def check_requirements_file(req_file, skip_packages):
