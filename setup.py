@@ -14,13 +14,21 @@
 
 import io
 
-from setuptools import find_packages, setup
+import setuptools
 
 
 with io.open('README.rst', 'r') as fh:
     long_description = fh.read()
 
-setup(
+requirements = [
+    'requests',
+    'retrying',
+    'setuptools >= 25.0.0',
+    'packaging',
+    'pylint >= 1.8.0',
+]
+
+setuptools.setup(
     name='gcp-devrel-py-tools',
 
     version='0.0.11',
@@ -38,10 +46,9 @@ setup(
         'Operating System :: POSIX',
     ],
 
-    packages=find_packages(),
+    packages=setuptools.find_packages(),
 
-    install_requires=[
-        'requests', 'retrying', 'setuptools>=25.0.0', 'packaging'],
+    install_requires=requirements,
 
     entry_points={
         'console_scripts': [

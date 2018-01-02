@@ -86,6 +86,8 @@ _ERROR_TEMPLATE = 'Pylint failed on {} with status {:d}.'
 _LINT_FILESET_MSG = (
     'Keyword arguments rc_filename and description are both '
     'required. No other keyword arguments are allowed.')
+_MISSING_OPTION_ADDITION = 'Expected to be adding to existing option {!r}.'
+_MISSING_OPTION_REPLACE = 'Expected to be replacing existing option {!r}.'
 
 
 def get_default_config():
@@ -254,7 +256,8 @@ def make_rc(base_cfg, target_filename,
         for opt, opt_val in opts.items():
             curr_val = curr_section.get(opt)
             if curr_val is None:
-                raise KeyError('Expected to be adding to existing option.')
+                msg = _MISSING_OPTION_ADDITION.format(opt)
+                raise KeyError(msg)
             curr_val = curr_val.rstrip(',')
             opt_val = _transform_opt(opt_val)
             curr_section[opt] = '%s, %s' % (curr_val, opt_val)
@@ -265,7 +268,15 @@ def make_rc(base_cfg, target_filename,
         for opt, opt_val in opts.items():
             curr_val = curr_section.get(opt)
             if curr_val is None:
-                raise KeyError('Expected to be replacing existing option.')
+                # NOTE: This doesn't need to fail, because some options
+                #       are present in one version of pylint and not present
+                #       in another. For example ``[BASIC].method-rgx`` is
+                #       ``(([a-z][a-z0-9_]{2,30})|(_[a-z0-9_]*))$`` in
+                #       ``1.7.5`` but in ``1.8.0`` the default config has
+                #       ``#method-rgx=`` (i.e. it is commented out in the
+                #       ``[BASIC]`` section).
+                msg = _MISSING_OPTION_REPLACE.format(opt)
+                print(msg, file=sys.stderr)
             opt_val = _transform_opt(opt_val)
             curr_section[opt] = '%s' % (opt_val,)
 
