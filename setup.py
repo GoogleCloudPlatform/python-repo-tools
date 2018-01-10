@@ -31,7 +31,7 @@ requirements = [
 setuptools.setup(
     name='gcp-devrel-py-tools',
 
-    version='0.0.11',
+    version='0.0.12',
 
     description='Tools for Cloud Platform Python libraries and samples.',
     long_description=long_description,
