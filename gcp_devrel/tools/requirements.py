@@ -17,6 +17,7 @@ Checks and updates dependencies to ensure they are the latest version.
 """
 import sys
 
+from packaging.requirements import Requirement
 from packaging.specifiers import Specifier
 import packaging.version
 from pip.req.req_file import parse_requirements
@@ -32,9 +33,12 @@ def get_package_info(package):
 
 
 def read_requirements(req_file):
-    """Reads a requirements file."""
-    items = list(parse_requirements(req_file, session={}))
+    """Reads a requirements file.
 
+    Args:
+        req_file (str): Filename of requirements file
+    """
+    items = list(parse_requirements(req_file, session={}))
     result = []
 
     for item in items:
@@ -57,6 +61,24 @@ def _get_newest_version(info):
     return latest
 
 
+def _is_pinned(req):
+    """Returns true if requirements have some version specifiers."""
+    return (req.specifier is not None) and len(req.specifier) > 0
+
+
+def _is_version_range(req):
+    """Returns true if requirements specify a version range."""
+
+    assert len(req.specifier) > 0
+    specs = list(req.specifier)
+    if len(specs) == 1:
+        # "foo > 2.0" or "foo == 2.4.3"
+        return specs[0].operator != '=='
+    else:
+        # "foo > 2.0, < 3.0"
+        return True
+
+
 def update_req(req):
     """Updates a given req object with the latest version."""
 
@@ -69,18 +91,19 @@ def update_req(req):
         print('{} is hidden on PyPI and will not be updated.'.format(req))
         return req, None
 
-    if req.specifier is not None and len(req.specifier) > 1:
+    if _is_pinned(req) and _is_version_range(req):
         print('{} is pinned to a range and will not be updated.'.format(req))
         return req, None
 
     newest_version = _get_newest_version(info)
     current_spec = next(iter(req.specifier)) if req.specifier else None
+    current_version = current_spec.version if current_spec else None
     new_spec = Specifier(u'=={}'.format(newest_version))
     if not current_spec or current_spec._spec != new_spec._spec:
         req.specifier = new_spec
         update_info = (
             req.name,
-            current_spec.version if current_spec else None,
+            current_version,
             newest_version)
         return req, update_info
     return req, None
@@ -105,11 +128,19 @@ def write_requirements(reqs_linenum, req_file):
 
 def check_req(req):
     """Checks if a given req is the latest version available."""
+    if not isinstance(req, Requirement):
+        return None
+
     info = get_package_info(req.name)
     newest_version = _get_newest_version(info)
+
+    if _is_pinned(req) and _is_version_range(req):
+        return None
+
     current_spec = next(iter(req.specifier)) if req.specifier else None
-    if current_spec.version != newest_version:
-        return req.name, current_spec.version, newest_version
+    current_version = current_spec.version if current_spec else None
+    if current_version != newest_version:
+        return req.name, current_version, newest_version
 
 
 def update_requirements_file(req_file, skip_packages):
@@ -126,6 +157,12 @@ def update_requirements_file(req_file, skip_packages):
 
 
 def check_requirements_file(req_file, skip_packages):
+    """Return list of outdated requirements.
+
+    Args:
+        req_file (str): Filename of requirements file
+        skip_packages (list): List of package names to ignore.
+    """
     reqs = read_requirements(req_file)
     if skip_packages is not None:
         reqs = [req for req in reqs if req.name not in skip_packages]
