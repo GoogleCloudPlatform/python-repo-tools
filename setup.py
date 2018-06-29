@@ -31,14 +31,14 @@ requirements = [
 setuptools.setup(
     name='gcp-devrel-py-tools',
 
-    version='0.0.14',
+    version='0.0.15',
 
     description='Tools for Cloud Platform Python libraries and samples.',
     long_description=long_description,
     url='https://github.com/GoogleCloudPlatform/python-repo-tools',
 
-    author='Jon Wayne Parrott',
-    author_email='jonwayne@google.com',
+    author='Thea Flowers',
+    author_email='theaflowers@google.com',
 
     license='Apache Software License',
 

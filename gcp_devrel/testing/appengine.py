@@ -28,16 +28,21 @@ def setup_sdk_imports():
     if six.PY3:
         return
 
-    if 'GAE_SDK_PATH' not in os.environ:
+    sdk_path = os.environ.get('GAE_SDK_PATH')
+
+    if not sdk_path:
         return
+
+    if os.path.exists(os.path.join(sdk_path, 'google_appengine')):
+        sdk_path = os.path.join(sdk_path, 'google_appengine')
 
     if 'google' in sys.modules:
         sys.modules['google'].__path__.append(
-            os.path.join(os.environ['GAE_SDK_PATH'], 'google'))
+            os.path.join(sdk_path, 'google'))
 
     # This sets up libraries packaged with the SDK, but puts them last in
     # sys.path to prevent clobbering newer versions
-    sys.path.append(os.environ['GAE_SDK_PATH'])
+    sys.path.append(sdk_path)
     import dev_appserver
     sys.path.extend(dev_appserver.EXTRA_PATHS)
 
