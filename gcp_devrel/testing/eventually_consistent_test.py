@@ -21,8 +21,10 @@ test_mark_args_tries = 0
 test_mark_custom_exception_tries = 0
 test_mark_custom_exception_with_tuple_tries = 0
 
+
 class MyException(Exception):
     pass
+
 
 @eventually_consistent.mark
 def test_mark_simple():
@@ -32,6 +34,7 @@ def test_mark_simple():
         assert True
     else:
         assert False
+
 
 @eventually_consistent.mark(tries=2)
 def test_mark_args():
@@ -79,6 +82,7 @@ def test_call_simple():
 
 def test_call_args():
     tried = 0
+
     @eventually_consistent.call(tries=2)
     def _():
         nonlocal tried
@@ -92,6 +96,7 @@ def test_call_args():
 def test_call_args_fail():
     with pytest.raises(AssertionError):
         tried = 0
+
         @eventually_consistent.call(tries=2)
         def _():
             nonlocal tried
@@ -104,6 +109,7 @@ def test_call_args_fail():
 
 def test_call_custom_exception():
     tried = 0
+
     @eventually_consistent.call(tries=2, exceptions=MyException)
     def _():
         nonlocal tried
@@ -116,6 +122,7 @@ def test_call_custom_exception():
 
 def test_call_custom_exception_with_tuple():
     tried = 0
+
     @eventually_consistent.call(
         tries=3, exceptions=(MyException, AssertionError))
     def _():

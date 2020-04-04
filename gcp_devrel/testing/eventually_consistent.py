@@ -31,6 +31,7 @@ def _retry_on_exception(exception_class):
         return False
     return inner
 
+
 def mark(*args, **kwargs):
     """Marks an entire test as eventually consistent and retries.
 
@@ -58,6 +59,7 @@ def mark(*args, **kwargs):
             wait_exponential_max=wait_exponential_max,
             stop_max_attempt_number=tries,
             retry_on_exception=_retry_on_exception(retry_exceptions))(args[0])
+
     # `mark()` syntax
     def inner(f):
         __tracebackhide__ = True
@@ -121,6 +123,7 @@ def call(*args, **kwargs):
             stop_max_attempt_number=tries,
             retry_on_exception=_retry_on_exception(
                 retry_exceptions))(args[0])()
+
     # `@call()` syntax
     def inner(f):
         __tracebackhide__ = True
