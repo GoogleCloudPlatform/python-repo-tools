@@ -21,6 +21,7 @@ with io.open('README.rst', 'r') as fh:
     long_description = fh.read()
 
 requirements = [
+    'google-cloud-core',
     'requests',
     'retrying',
     'setuptools >= 25.0.0',
