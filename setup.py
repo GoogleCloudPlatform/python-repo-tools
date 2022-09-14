@@ -24,7 +24,6 @@ requirements = [
     'google-cloud-core',
     'requests',
     'retrying',
-    'setuptools >= 25.0.0',
     'packaging',
     'pylint >= 1.8.0',
 ]
